@@ -1,28 +1,15 @@
 require 'pry'
 
-def get_first_name_of_season_winner(data, season)
-  season_data=data[season]
-  winner=nil
-  season_data.each do|attributes|
-    if attributes["status"]== "Winner"
-      winner=attributes["name"].split[0]
-    end
-  end
-  winner
+def get_first_name_of_season_winner data, season
+  contestants = data[season]
+  winning_contestant = find_winner contestants
+  winning_contestant["name"].split[0]
 end
 
-def get_contestant_name(data, occupation)
-  name=nil
-  get_all_contestants(data).each do|attributes|
-    if attributes["occupation"]==occupation
-      name = attributes["name"]
-    end
-  end
-  name
-end
-
-def get_all_contestants(data)
-  all_contestants=data.values.flatten
+def get_contestant_name data, occupation
+  contestants = get_all_contestants(data)
+  matching_contestant = find_contestant_by_attribute contestants, "occupation", occupation
+  matching_contestant["name"]
 end
 
 def count_contestants_by_hometown(data, hometown)
@@ -48,4 +35,18 @@ def get_average_age_for_season(data, season)
   season_person_data.each{|attributes| total_age+=attributes["age"].to_f}
 
   (total_age/person_count).round
+end
+
+def find_winner contestants
+  find_contestant_by_attribute contestants, "status", "Winner"
+end
+
+def find_contestant_by_attribute contestants, key, value
+  contestants.find do |contestant|
+    contestant[key] == value
+  end
+end
+
+def get_all_contestants data
+  data.values.flatten
 end
